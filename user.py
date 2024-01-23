@@ -17,17 +17,16 @@ class User(BaseModel):
     cards: list[Card]
 
     def remove_funds(self, amount, **discounts) -> None | False:
-        discount_applied = False
+        all_stacking_discounts = {k: v for k, v in discounts.items() if v[1] == True}
+        non_stacking_discounts = {k: v for k, v in discounts.items() if v[1] == False}
 
-        for code, pns in discounts.items(): # pns means Percent and Stacks
-            for perc, stacks in pns:
-                if stacks and discount_applied == True:
-                    amount *= 1 - perc
-                elif not stacks and discount_applied == False:
-                    # We assume non-stacking discounts are sorted at the back.
-                    amount *= 1 - perc
-                else:
-                    continue
+        if len(all_stacking_discounts) >= 1:
+            # we know we have atleast one stacking
+            for discount in all_stacking_discounts.items():
+                amount *= discount[0] # we dont really need stacks
+        else:
+            maximum_nonstacking = max(non_stacking_discounts.values(), key=lambda item: item[0])
+            amount *= maximum_nonstacking[0] # max return type is list[int, bool]
 
         if self.balance >= amount:
             self.balance -= amount
