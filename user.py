@@ -9,6 +9,8 @@ from typing import Any
 from card import Card
 from exceptions import RejectedError
 
+from discounts import StackingDiscount, NonStackingDiscount
+
 class User(BaseModel):
     creation_date: datetime
     username: str
@@ -16,9 +18,9 @@ class User(BaseModel):
     balance: int
     cards: list[Card]
 
-    def remove_funds(self, amount, **discounts) -> None | False:
-        all_stacking_discounts = {k: v for k, v in discounts.items() if v[1] == True}
-        non_stacking_discounts = {k: v for k, v in discounts.items() if v[1] == False}
+    def remove_funds(self, amount, **discounts: list[StackingDiscount | NonStackingDiscount]) -> None | False:
+        all_stacking_discounts = {k: v for k, v in discounts.items() if v.stacking == True}
+        non_stacking_discounts = {k: v for k, v in discounts.items() if v.stacking == False}
 
         if len(all_stacking_discounts) >= 1:
             # we know we have atleast one stacking
