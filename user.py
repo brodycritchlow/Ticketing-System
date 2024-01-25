@@ -18,7 +18,7 @@ class User(BaseModel):
     balance: int
     cards: list[Card]
 
-    def remove_funds(self, amount, **discounts: list[StackingDiscount | NonStackingDiscount]) -> None | False:
+    def remove_funds(self, amount, **discounts: list[StackingDiscount | NonStackingDiscount]) -> None | bool:
         all_stacking_discounts = {k: v for k, v in discounts.items() if v.stacking == True}
         non_stacking_discounts = {k: v for k, v in discounts.items() if v.stacking == False}
 

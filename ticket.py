@@ -18,12 +18,14 @@ from pydantic import BaseModel
 from database_helpers import get_next_available
 from exceptions import AlreadyOwnedError, RejectedError
 
+from user import User
+
 class GenericTicket(BaseModel):
     seat: tuple[str, int] # Seat will look something like (A, 23)
     event: tuple[int, str] # Game will look something like (9381023, "MLB - Orioles vs Dodgers")
     purchase_price: int
     purchase_date: datetime | None
-    owner: None # UPDATE LATER TO BE USER CLASS
+    owner: User | None
 
     def purchase_ticket(self, purchasing_user, **discounts) -> Self:
         transid = get_next_available()
